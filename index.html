@@ -123,9 +123,8 @@
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4">
-        <a href="https://zinecia.github.io/Home/" class="btn-lz">
-          Entrar
-        </a>
+     <a href="https://zinecia.github.io/Home/" class="btn-lz" id="btn-entrar">Entrar</a>
+
 
         <a href="#" id="btn-compartir" class="btn-lz">
           Compartir
@@ -225,8 +224,8 @@
       e.preventDefault();
       const shareData = {
         title: 'LzPlay Download',
-        text: 'Mira esta app increíble para ver películas gratis: https://lzplayapk.github.io',
-        url: 'https://lzplayapk.github.io',
+        text: 'Mira esta app increíble para ver películas gratis: ',
+        url: 'https://lzrdrgz01.github.io/download-LzPlay/',
       };
 
       if (navigator.share) {
@@ -242,7 +241,46 @@
         window.open(whatsappUrl, '_blank');
       }
     });
+	
+	  function esAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  // Detectar plataforma
+  function esAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  function esIphone() {
+    return /iPhone/i.test(navigator.userAgent);
+  }
+
+  const CONTRASENA_CORRECTA = "LzMovies"; // Cambia la contraseña
+
+  document.getElementById("btn-entrar").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (esIphone()) {
+      // iPhone: acceso directo sin token ni contraseña
+      window.location.href = "https://zinecia.github.io/Home/";
+    } else if (esAndroid()) {
+      // Android: generar token y redirigir
+      sessionStorage.setItem("lz_token", "acceso_valido");
+      window.location.href = "https://zinecia.github.io/Home/";
+    } else {
+      // PC: pedir contraseña
+      const pass = prompt("Por favor ingresa la contraseña para continuar:");
+
+      if (pass === CONTRASENA_CORRECTA) {
+        sessionStorage.setItem("lz_token", "acceso_valido");
+        window.location.href = "https://zinecia.github.io/Home/";
+      } else {
+        alert("Contraseña incorrecta, acceso denegado.");
+      }
+    }
+  });
   </script>
+
 
 </body>
 </html>
