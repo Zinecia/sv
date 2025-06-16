@@ -123,12 +123,13 @@
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4">
-     <a href="https://zinecia.github.io/Home/" class="btn-lz" id="btn-entrar">Entrar</a>
+        <a href="https://zinecia.github.io/Home/" class="btn-lz">
+          Entrar
+        </a>
 
-
-        <a href="https://lzrdrgz01.github.io/download-LzPlay/" id="btn-compartir" class="btn-lz">
-  Compartir
-</a>
+        <a href="#" id="btn-compartir" class="btn-lz">
+          Compartir
+        </a>
 
         <a href="https://linktr.ee/LzRdrg1" class="btn-lz">
           Redes Sociales
@@ -219,103 +220,29 @@
     });
 
 
-  document.getElementById('btn-compartir').addEventListener('click', async (e) => {
-  e.preventDefault();
+    // Botón compartir (igual que antes)
+    document.getElementById('btn-compartir').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const shareData = {
+        title: 'LzPlay Download',
+        text: 'Mira esta app increíble para ver películas gratis:',
+        url: 'https://lzrdrgz01.github.io/download-LzPlay/',
+      };
 
-  const shareData = {
-    title: 'LzPlay Download',
-    text: '¡Mira esta app increíble para ver películas gratis! 📲🍿',
-    url: 'https://lzrdrgz01.github.io/download-LzPlay/',
-  };
-
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-    } catch (err) {
-      console.error('Error al compartir:', err);
-    }
-  } else {
-    // Fallback: mostrar modal de opciones
-    mostrarOpcionesDeCompartir(shareData.url);
-  }
-});
-
-function mostrarOpcionesDeCompartir(enlace) {
-  const opciones = `
-    <div id="modal-share" style="
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: flex;
-      align-items: center; justify-content: center; z-index: 10000;">
-      
-      <div style="background: #111; padding: 20px; border-radius: 15px; text-align: center; max-width: 300px;">
-        <p style="color: white; margin-bottom: 15px;">Compartir en:</p>
-        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-          <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(enlace)}" target="_blank" title="WhatsApp">
-            <i class="fab fa-whatsapp text-2xl text-green-500"></i>
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(enlace)}" target="_blank" title="Facebook">
-            <i class="fab fa-facebook text-2xl text-blue-500"></i>
-          </a>
-          <a href="https://t.me/share/url?url=${encodeURIComponent(enlace)}" target="_blank" title="Telegram">
-            <i class="fab fa-telegram text-2xl text-blue-400"></i>
-          </a>
-          <button onclick="copiarEnlace('${enlace}')" title="Copiar">
-            <i class="fas fa-link text-2xl text-yellow-400"></i>
-          </button>
-        </div>
-        <button onclick="document.getElementById('modal-share').remove()" class="btn-lz">Cerrar</button>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', opciones);
-}
-
-function copiarEnlace(texto) {
-  navigator.clipboard.writeText(texto).then(() => {
-    alert("Enlace copiado al portapapeles");
-  });
-}
-
-	
-	  function esAndroid() {
-    return /Android/i.test(navigator.userAgent);
-  }
-
-  // Detectar plataforma
-  function esAndroid() {
-    return /Android/i.test(navigator.userAgent);
-  }
-
-  function esIphone() {
-    return /iPhone/i.test(navigator.userAgent);
-  }
-
-  const CONTRASENA_CORRECTA = "LzMovies"; // Cambia la contraseña
-
-  document.getElementById("btn-entrar").addEventListener("click", (e) => {
-    e.preventDefault();
-
-    if (esIphone()) {
-      // iPhone: acceso directo sin token ni contraseña
-      window.location.href = "https://zinecia.github.io/Home/";
-    } else if (esAndroid()) {
-      // Android: generar token y redirigir
-      sessionStorage.setItem("lz_token", "acceso_valido");
-      window.location.href = "https://zinecia.github.io/Home/";
-    } else {
-      // PC: pedir contraseña
-      const pass = prompt("Por favor ingresa la contraseña para continuar:");
-
-      if (pass === CONTRASENA_CORRECTA) {
-        sessionStorage.setItem("lz_token", "acceso_valido");
-        window.location.href = "https://zinecia.github.io/Home/";
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          console.log('Compartido exitosamente');
+        } catch (err) {
+          console.error('Error al compartir:', err);
+        }
       } else {
-        alert("Contraseña incorrecta, acceso denegado.");
+        // Fallback a WhatsApp
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+        window.open(whatsappUrl, '_blank');
       }
-    }
-  });
+    });
   </script>
-
 
 </body>
 </html>
