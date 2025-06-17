@@ -139,6 +139,7 @@
 
   </div> <!-- Fin contenido principal -->
 
+ 
   <script>
     // Loader y mostrar contenido después de 2.5s
     window.addEventListener("load", () => {
@@ -219,136 +220,97 @@
       handleOrientationChange();
     });
 
+    document.getElementById('btn-compartir').addEventListener('click', async (e) => {
+      e.preventDefault();
 
- document.getElementById('btn-compartir').addEventListener('click', async (e) => {
-  e.preventDefault();
+      const shareData = {
+        title: 'LzPlay Download',
+        text: '¡Mira esta app increíble para ver películas gratis! 📲🍿',
+        url: 'https://lzrdrgz01.github.io/download-LzPlay/',
+      };
 
-  const shareData = {
-    title: 'LzPlay Download',
-    text: '¡Mira esta app increíble para ver películas gratis! 📲🍿',
-    url: 'https://lzrdrgz01.github.io/download-LzPlay/',
-  };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          fallbackCopiarSimple(); // Si hay error al compartir
+        }
+      } else {
+        fallbackCopiarSimple(); // WebView u otros navegadores no compatibles
+      }
+    });
 
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-    } catch (err) {
-      console.error('Error al compartir:', err);
+    function fallbackCopiarSimple() {
+      const texto = 'https://lzrdrgz01.github.io/download-LzPlay/';
+      navigator.clipboard.writeText(texto).then(() => {
+        mostrarMensajeCopiado();
+      });
     }
-  } else {
-    // Fallback para navegadores que no soportan navigator.share
-    mostrarOpcionesDeCompartir(shareData.url);
-  }
-});
 
-function mostrarOpcionesDeCompartir(enlace) {
-  const opciones = `
-  <div id="modal-share" style="
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); display: flex;
-    align-items: center; justify-content: center; z-index: 10000;
-    backdrop-filter: blur(4px);">
-
-    <div style="background: #111; padding: 30px 25px; border-radius: 20px; text-align: center; max-width: 400px; width: 90%;">
-      <p style="color: white; font-size: 1.2rem; margin-bottom: 20px;">Compartir en:</p>
-
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.8rem;">
-        <button onclick="abrirCompartir('whatsapp', '${enlace}')" title="WhatsApp"><i class="fab fa-whatsapp text-green-500"></i></button>
-        <button onclick="abrirCompartir('facebook', '${enlace}')" title="Facebook"><i class="fab fa-facebook text-blue-500"></i></button>
-        <button onclick="abrirCompartir('telegram', '${enlace}')" title="Telegram"><i class="fab fa-telegram text-blue-400"></i></button>
-        <button onclick="abrirCompartir('twitter', '${enlace}')" title="Twitter (X)"><i class="fab fa-x-twitter text-white"></i></button>
-        <button onclick="abrirCompartir('instagram', '${enlace}')" title="Instagram"><i class="fab fa-instagram text-pink-500"></i></button>
-        <button onclick="abrirCompartir('messenger', '${enlace}')" title="Messenger"><i class="fab fa-facebook-messenger text-blue-400"></i></button>
-        <button onclick="copiarEnlace('${enlace}')" title="Copiar enlace"><i class="fas fa-link text-yellow-400"></i></button>
-      </div>
-
-      <button onclick="document.getElementById('modal-share').remove()" style="
-        background-color: #facc15; color: black; padding: 10px 20px;
-        border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
-        Cerrar
-      </button>
+function mostrarMensajeCopiado() {
+  const mensaje = document.createElement("div");
+  mensaje.innerHTML = `
+    <div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">
+      🎉 ¡Enlace copiado con éxito! 📲
     </div>
-  </div>
+    <div style="font-size: 14px; word-break: break-all; color: #222;">
+ https://lzrdrgz01.github.io/download-LzPlay/
+    </div>
   `;
-  document.body.insertAdjacentHTML('beforeend', opciones);
+  mensaje.style.position = "fixed";
+  mensaje.style.bottom = "30px";
+  mensaje.style.left = "50%";
+  mensaje.style.transform = "translateX(-50%)";
+  mensaje.style.background = "#facc15";
+  mensaje.style.color = "#000";
+  mensaje.style.padding = "15px 24px";
+  mensaje.style.borderRadius = "16px";
+  mensaje.style.fontWeight = "bold";
+  mensaje.style.zIndex = "10001";
+  mensaje.style.boxShadow = "0 0 12px rgba(0,0,0,0.6)";
+  mensaje.style.textAlign = "center";
+  mensaje.style.minWidth = "260px";
+  mensaje.style.userSelect = "none";
+  document.body.appendChild(mensaje);
+
+  setTimeout(() => {
+    mensaje.remove();
+  }, 3500);
 }
 
-function abrirCompartir(plataforma, enlace) {
-  let url = "";
-  const texto = encodeURIComponent("¡Mira esto! 👉 " + enlace);
 
-  switch(plataforma) {
-    case 'whatsapp':
-      url = `https://api.whatsapp.com/send?text=${texto}`;
-      break;
-    case 'facebook':
-      url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(enlace)}`;
-      break;
-    case 'telegram':
-      url = `https://t.me/share/url?url=${encodeURIComponent(enlace)}&text=${texto}`;
-      break;
-    case 'twitter':
-      url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(enlace)}&text=${texto}`;
-      break;
-    case 'messenger':
-      url = `fb-messenger://share?link=${encodeURIComponent(enlace)}`;
-      break;
-    case 'instagram':
-      alert("Instagram no permite compartir directamente desde navegador. Comparte el enlace manualmente.");
-      return;
-  }
+    function esAndroid() {
+      return /Android/i.test(navigator.userAgent);
+    }
 
-  // Abrir siempre en navegador externo
-  window.open(url, '_blank');
-}
+    function esIphone() {
+      return /iPhone/i.test(navigator.userAgent);
+    }
 
-function copiarEnlace(texto) {
-  navigator.clipboard.writeText(texto).then(() => {
-    alert("Enlace copiado al portapapeles");
-  }).catch(() => {
-    alert("Error al copiar el enlace");
-  });
-}
-	
-	  function esAndroid() {
-    return /Android/i.test(navigator.userAgent);
-  }
+    const CONTRASENA_CORRECTA = "LzMovies"; // Cambia la contraseña
 
-  // Detectar plataforma
-  function esAndroid() {
-    return /Android/i.test(navigator.userAgent);
-  }
+    document.getElementById("btn-entrar").addEventListener("click", (e) => {
+      e.preventDefault();
 
-  function esIphone() {
-    return /iPhone/i.test(navigator.userAgent);
-  }
-
-  const CONTRASENA_CORRECTA = "LzMovies"; // Cambia la contraseña
-
-  document.getElementById("btn-entrar").addEventListener("click", (e) => {
-    e.preventDefault();
-
-    if (esIphone()) {
-      // iPhone: acceso directo sin token ni contraseña
-      window.location.href = "https://zinecia.github.io/Home/";
-    } else if (esAndroid()) {
-      // Android: generar token y redirigir
-      sessionStorage.setItem("lz_token", "acceso_valido");
-      window.location.href = "https://zinecia.github.io/Home/";
-    } else {
-      // PC: pedir contraseña
-      const pass = prompt("Por favor ingresa la contraseña para continuar:");
-
-      if (pass === CONTRASENA_CORRECTA) {
+      if (esIphone()) {
+        // iPhone: acceso directo sin token ni contraseña
+        window.location.href = "https://zinecia.github.io/Home/";
+      } else if (esAndroid()) {
+        // Android: generar token y redirigir
         sessionStorage.setItem("lz_token", "acceso_valido");
         window.location.href = "https://zinecia.github.io/Home/";
       } else {
-        alert("Contraseña incorrecta, acceso denegado.");
+        // PC: pedir contraseña
+        const pass = prompt("Por favor ingresa la contraseña para continuar:");
+
+        if (pass === CONTRASENA_CORRECTA) {
+          sessionStorage.setItem("lz_token", "acceso_valido");
+          window.location.href = "https://zinecia.github.io/Home/";
+        } else {
+          alert("Contraseña incorrecta, acceso denegado.");
+        }
       }
-    }
-  });
+    });
   </script>
-
-
 </body>
 </html>
