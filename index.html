@@ -9,7 +9,8 @@
   <meta name="application-name" content="LzPlay Download">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 
   <style>
     body {
@@ -219,7 +220,7 @@
     });
 
 
-  document.getElementById('btn-compartir').addEventListener('click', async (e) => {
+ document.getElementById('btn-compartir').addEventListener('click', async (e) => {
   e.preventDefault();
 
   const shareData = {
@@ -235,47 +236,79 @@
       console.error('Error al compartir:', err);
     }
   } else {
-    // Fallback: mostrar modal de opciones
+    // Fallback para navegadores que no soportan navigator.share
     mostrarOpcionesDeCompartir(shareData.url);
   }
 });
 
 function mostrarOpcionesDeCompartir(enlace) {
   const opciones = `
-    <div id="modal-share" style="
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: flex;
-      align-items: center; justify-content: center; z-index: 10000;">
-      
-      <div style="background: #111; padding: 20px; border-radius: 15px; text-align: center; max-width: 300px;">
-        <p style="color: white; margin-bottom: 15px;">Compartir en:</p>
-        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-          <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(enlace)}" target="_blank" title="WhatsApp">
-            <i class="fab fa-whatsapp text-2xl text-green-500"></i>
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(enlace)}" target="_blank" title="Facebook">
-            <i class="fab fa-facebook text-2xl text-blue-500"></i>
-          </a>
-          <a href="https://t.me/share/url?url=${encodeURIComponent(enlace)}" target="_blank" title="Telegram">
-            <i class="fab fa-telegram text-2xl text-blue-400"></i>
-          </a>
-          <button onclick="copiarEnlace('${enlace}')" title="Copiar">
-            <i class="fas fa-link text-2xl text-yellow-400"></i>
-          </button>
-        </div>
-        <button onclick="document.getElementById('modal-share').remove()" class="btn-lz">Cerrar</button>
+  <div id="modal-share" style="
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); display: flex;
+    align-items: center; justify-content: center; z-index: 10000;
+    backdrop-filter: blur(4px);">
+
+    <div style="background: #111; padding: 30px 25px; border-radius: 20px; text-align: center; max-width: 400px; width: 90%;">
+      <p style="color: white; font-size: 1.2rem; margin-bottom: 20px;">Compartir en:</p>
+
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.8rem;">
+        <button onclick="abrirCompartir('whatsapp', '${enlace}')" title="WhatsApp"><i class="fab fa-whatsapp text-green-500"></i></button>
+        <button onclick="abrirCompartir('facebook', '${enlace}')" title="Facebook"><i class="fab fa-facebook text-blue-500"></i></button>
+        <button onclick="abrirCompartir('telegram', '${enlace}')" title="Telegram"><i class="fab fa-telegram text-blue-400"></i></button>
+        <button onclick="abrirCompartir('twitter', '${enlace}')" title="Twitter (X)"><i class="fab fa-x-twitter text-white"></i></button>
+        <button onclick="abrirCompartir('instagram', '${enlace}')" title="Instagram"><i class="fab fa-instagram text-pink-500"></i></button>
+        <button onclick="abrirCompartir('messenger', '${enlace}')" title="Messenger"><i class="fab fa-facebook-messenger text-blue-400"></i></button>
+        <button onclick="copiarEnlace('${enlace}')" title="Copiar enlace"><i class="fas fa-link text-yellow-400"></i></button>
       </div>
+
+      <button onclick="document.getElementById('modal-share').remove()" style="
+        background-color: #facc15; color: black; padding: 10px 20px;
+        border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+        Cerrar
+      </button>
     </div>
+  </div>
   `;
   document.body.insertAdjacentHTML('beforeend', opciones);
+}
+
+function abrirCompartir(plataforma, enlace) {
+  let url = "";
+  const texto = encodeURIComponent("¡Mira esto! 👉 " + enlace);
+
+  switch(plataforma) {
+    case 'whatsapp':
+      url = `https://api.whatsapp.com/send?text=${texto}`;
+      break;
+    case 'facebook':
+      url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(enlace)}`;
+      break;
+    case 'telegram':
+      url = `https://t.me/share/url?url=${encodeURIComponent(enlace)}&text=${texto}`;
+      break;
+    case 'twitter':
+      url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(enlace)}&text=${texto}`;
+      break;
+    case 'messenger':
+      url = `fb-messenger://share?link=${encodeURIComponent(enlace)}`;
+      break;
+    case 'instagram':
+      alert("Instagram no permite compartir directamente desde navegador. Comparte el enlace manualmente.");
+      return;
+  }
+
+  // Abrir siempre en navegador externo
+  window.open(url, '_blank');
 }
 
 function copiarEnlace(texto) {
   navigator.clipboard.writeText(texto).then(() => {
     alert("Enlace copiado al portapapeles");
+  }).catch(() => {
+    alert("Error al copiar el enlace");
   });
 }
-
 	
 	  function esAndroid() {
     return /Android/i.test(navigator.userAgent);
