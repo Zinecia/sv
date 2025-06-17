@@ -242,6 +242,40 @@
         window.open(whatsappUrl, '_blank');
       }
     });
+
+     // Detectar plataforma
+  function esAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  function esIphone() {
+    return /iPhone/i.test(navigator.userAgent);
+  }
+
+    const CONTRASENA_CORRECTA = "LzUser"; // Cambia la contraseña
+
+  document.getElementById("btn-entrar").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if (esIphone()) {
+      // iPhone: acceso directo sin token ni contraseña
+      window.location.href = "https://zinecia.github.io/Home/";
+    } else if (esAndroid()) {
+      // Android: generar token y redirigir
+      sessionStorage.setItem("lz_token", "acceso_valido");
+      window.location.href = "https://zinecia.github.io/Home/";
+    } else {
+      // PC: pedir contraseña
+      const pass = prompt("Por favor ingresa la contraseña para continuar:");
+
+      if (pass === CONTRASENA_CORRECTA) {
+        sessionStorage.setItem("lz_token", "acceso_valido");
+        window.location.href = "https://zinecia.github.io/Home/";
+      } else {
+        alert("Contraseña incorrecta, acceso denegado.");
+      }
+    }
+  });
   </script>
 
 </body>
